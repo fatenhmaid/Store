@@ -21,7 +21,7 @@
            </select>
     </div>
     <div class="form-group">
-        <label for="">Description</label>
+        
         <x-form.textarea label="Description" name="description" :value="$category->description"/>
         
     </div>

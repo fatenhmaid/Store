@@ -23,7 +23,6 @@ class CategoriesController extends Controller
     {
         //
         $categories= Category::all();  //Return collection object
-       // $categories[0];
         return view('dashboard.categories.index',compact('categories'));
     }
 
@@ -118,9 +117,9 @@ class CategoriesController extends Controller
         //
         try{
     $category = Category::findorfail($id);
-  }catch(Exception $e){
-   return redirect()->route('categories.index')
-   ->with('info','Record not found!');
+    }catch(Exception $e){
+     return redirect()->route('categories.index')
+    ->with('info','Record not found!');
   }
     $parents= Category::where('id','<>',$id)
     ->where(function($query) use($id){
@@ -143,7 +142,7 @@ class CategoriesController extends Controller
     {
         //  //  $category->fill($request->all())->save();
         $category=Category::findOrFail($id);
-        $old_image=$category->image;
+        $old_image =$category->image;
         $data = $request->except('image');
         $new_image= $this->uploadImage($request);     
         if($new_image){
