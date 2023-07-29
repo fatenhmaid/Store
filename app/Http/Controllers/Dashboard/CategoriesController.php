@@ -22,7 +22,20 @@ class CategoriesController extends Controller
     public function index()
     {
         //
-        $categories= Category::all();  //Return collection object
+        $request = request(); 
+        // select  a.*,b.name as parent_name
+        // from categories as a
+        //left join categories as b on b.id= a.parent_id 
+        $categories= Category::leftJoin('categories as parents','parents.id','=','categories.parent_id')
+        ->select([
+          'categories.*',
+          'parents.name as parent_name'
+        ])
+        ->filter($request->query())
+        ->paginate(5);
+        
+          //->latest()  ->orderBy('name')  ->onlyTrashed()
+        //$categories=Category::status('archived')->paginate();
         return view('dashboard.categories.index',compact('categories'));
     }
 
@@ -72,7 +85,7 @@ class CategoriesController extends Controller
 
           $category= new Category($request->all());
           $category->save();*/
-        $clean_data=  $request->validate(Category::rules(),[
+         $clean_data=  $request->validate(Category::rules(),[
             'required'=>'This field(:attribute) is required',
             'name.unique'=>'This name is already exists!'
           ]);
@@ -167,9 +180,9 @@ class CategoriesController extends Controller
         
         $category=Category::findOrFail($id);      
         $category->delete();
-        if($category->image){
+       /* if($category->image){
           Storage::disk('public')->delete($category->image);
-        }
+        }*/
         //Category::destroy($id);
         return redirect()->route('categories.index')
           ->with('success','Category deleted!');
@@ -189,5 +202,26 @@ class CategoriesController extends Controller
         ]);        
         return $path;
        }  
+    public function trash(){
+     $categories= Category::onlyTrashed()->paginate();
+     return view('dashboard.categories.trash',compact('categories'));
+    }
+
+    public function restore(Request $request,$id){
+       $category = Category::onlyTrashed()->findOrfail($id);
+       $category->restore();
+       return redirect()->route('categories.trash')
+       ->with('success','category restored!');
+     }
+
+     public function forceDelete($id){
+      $category = Category::onlyTrashed()->findOrfail($id);
+      $category->forceDelete();
+      if($category->image){
+        Storage::disk('public')->delete($category->image);
+      }
+      return redirect()->route('categories.trash')
+      ->with('success','category deleted forever!');
+    }
     }
     

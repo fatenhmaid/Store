@@ -5,19 +5,42 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Rules\filter;
-
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 
 
 class Category extends Model
 {
-    use HasFactory;
+    use HasFactory, softDeletes;
     protected $fillable = [
         'name','parent_id','description','image','status','slug'
     ];
     protected $guarded = [
       'id'
     ];
+    public function scopeActive(Builder $builder)
+    {
+       $builder->where('status', '=', 'active');
+    }
+
+    public function scopeStatus(Builder $builder,$status)
+    {
+       $builder->where('status', '=', $status);
+    }
+
+    public function scopeFilter(Builder $builder,$filters)
+    {
+      $builder->when($filters['name'] ?? false,function($builder,$value){
+      $builder->where('categories.name','LIKE',"%{$value}%");
+     });
+     $builder->when($filters['status'] ?? false,function($builder,$value){
+      $builder->where('categories.status','=',$value);
+     });
+      
+    }
+
+
     //Rule::unique('categories','name')->ignore($id)
   public static function rules($id=0) {
  

@@ -15,9 +15,9 @@ return[
     ],
     [
         'icon'=>'far fa-circle nav-icon',
-        'route'=>'categories.index',
+        'route'=>'products.index',
         'title'=>'Products',
-        'active'=>'product.*'
+        'active'=>'products.*'
     ],
     [
         'icon'=>'far fa-circle nav-icon',

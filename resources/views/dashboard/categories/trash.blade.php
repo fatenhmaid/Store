@@ -1,13 +1,12 @@
 @extends('layouts.dashboard')
-@section('title','categories')
+@section('title','Trashed categories')
 @section('breadcrumb')
   @parent
   <li class="breadcrumb-item active">Categories</li>
   @endsection
 @section('content')
 <div class="mb-5">
-    <a href="{{ route('categories.create') }}" class="btn btn-sm btn-outline-primary mr-2">Create</a>
-    <a href="{{ route('categories.trash') }}" class="btn btn-sm btn-outline-dark">Trash</a>
+    <a href="{{ route('categories.index') }}" class="btn btn-sm btn-outline-primary">Back</a>
 </div>
 <x-alert type="success"/>
 <x-alert type="info"/>
@@ -28,7 +27,7 @@
             <th>Name</th>
             <th>Parent</th>
             <th>Status</th>
-            <th>Created At</th>
+            <th>Deleted At</th>
             <th colspan="2"></th>
         </tr>
     </thead>
@@ -41,22 +40,27 @@
         <td>{{$category->name}}</td>
         <td>{{$category->parent_name}}</td>
         <td>{{$category->status}}</td>
-        <td>{{$category->created_at}}</td>
+        <td>{{$category->deleted_at}}</td>
         <td>
-        <a href="{{ route('categories.edit', $category->id) }}"class="btnbtn-smbtn-outline-success">Edit<a>
+        <form action="{{ route('categories.restore', $category->id) }}" method="post">
+        @csrf
+       @method('put')
+       <button type="submit" class="btn btn-sm btn-outline-info ">Restore</button>
+       </form>
+
         </td>
         <td>
-        <form action="{{ route('categories.destroy', $category->id) }}" method="post">
+        <form action="{{ route('categories.force-delete', $category->id) }}" method="post">
         @csrf
        @method('delete')
-       <button type="submit" class="btn btn-sm btn-outline-danger ">Delete</button>
+       <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
        </form>
 
         </td>
     </tr>
     @empty
     <tr>
-     <td colspan="8">No categories defined.</td>
+     <td colspan="7">No categories defined.</td>
     </tr>
       @endforelse
    </tboady>
