@@ -70,6 +70,7 @@ return [
     */
 
     'timezone' => 'Asia/Gaza',
+    'currency'=>'USD',
 
     /*
     |--------------------------------------------------------------------------
@@ -211,6 +212,7 @@ return [
     'aliases' => Facade::defaultAliases()->merge([
         'Auth'=> \Illuminate\Support\Facades\Auth::class,
         // 'ExampleClass' => App\Example\ExampleClass::class,
+        'Currency'=>App\Helpers\Currency::class,
     ])->toArray(),
 
 ];

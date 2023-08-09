@@ -138,22 +138,47 @@ class CategoriesController extends Controller
      */
     public function edit($id)
     {
-        //
-        try{
-    $category = Category::findorfail($id);
-    }catch(Exception $e){
-     return redirect()->route('categories.index')
-    ->with('info','Record not found!');
-  }
-    $parents= Category::where('id','<>',$id)
-    ->where(function($query) use($id){
-      $query->whereNull('parent_id')
-            ->orwhere('parent_id','<>',$id);
-    })
-      ->get();
-    return view('dashboard.categories.edit', compact('category', 'parents'));
-    
+        try {
+            $category = Category::findOrFail($id);
+        } catch (Exception $e) {
+            return redirect()->route('categories.index')
+                ->with('info', 'Record not found');
+        }
+        
+        $user = Auth::user();
+        $isAdmin = empty($user->store_id);
+        
+        $parents = Category::where('id', '<>', $id)
+            ->where(function ($query) use ($id, $user, $isAdmin) {
+                $query->where(function ($subQuery) use ($id, $user, $isAdmin) {
+                    $subQuery->where('parent_id', '<>', $id);
+                    if (!$isAdmin) {
+                        $subQuery->where('user_id', $user->id);
+                    }
+                });
+                
+                if ($isAdmin) {
+                    $query->orWhereNull('parent_id');
+                }
+                
+                if (!$isAdmin) {
+                    $query->orWhere(function ($subQuery) use ($id, $user) {
+                        $subQuery->where('id', '<>', $id)
+                            ->where('user_id', $user->id);
+                    });
+                }
+            });
+            
+        // إذا كان المستخدم ليس إدمن، سيتم تطبيق النقطة السادسة (عدم إظهار تصنيف الأبناء للمستخدم)
+        if (!$isAdmin) {
+            $parents->whereNull('parent_id');
+        }
+            
+        $parents = $parents->get();
+            
+        return view('dashboard.VendorAdmin.categories.edit', compact('category', 'parents'));
     }
+    
 
     /**
      * Update the specified resource in storage.
