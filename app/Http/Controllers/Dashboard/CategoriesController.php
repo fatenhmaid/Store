@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Storage;
 use App\Models\Category;
 use Illuminate\Support\Str;
 use App\Http\Requests\CategoryRequest;
+use Illuminate\Support\Facades\Auth;
 
 use Exception;
 
@@ -169,14 +170,14 @@ class CategoriesController extends Controller
                 }
             });
             
-        // إذا كان المستخدم ليس إدمن، سيتم تطبيق النقطة السادسة (عدم إظهار تصنيف الأبناء للمستخدم)
+            
         if (!$isAdmin) {
             $parents->whereNull('parent_id');
         }
             
         $parents = $parents->get();
             
-        return view('dashboard.VendorAdmin.categories.edit', compact('category', 'parents'));
+        return view('dashboard.categories.edit', compact('category', 'parents'));
     }
     
 

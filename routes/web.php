@@ -5,6 +5,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\Front\HomeController;
 use App\Http\Controllers\Front\ProductsController;
 use App\Http\Controllers\Front\CartController;
+use App\Http\Controllers\Front\CheckOutController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -27,6 +28,9 @@ Route::get('/products/{product:slug}', [ProductsController::class, 'show'])
 Route::get('/products', [ProductsController::class, 'index'])
 ->name('products.index');
 Route::resource('cart',CartController::class);
+Route::get('checkout',[CheckOutController::class,'create'])
+->name('checkout');
+Route::post('checkout',[CheckOutController::class,'store']);
 Route::post('/paypal/webhock',function(){
   echo 'Webhock called';
 });
