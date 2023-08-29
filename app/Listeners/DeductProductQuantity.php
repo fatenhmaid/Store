@@ -32,6 +32,7 @@ class DeductProductQuantity
     {
         //
         $order = $event->order;
+        try {
       foreach( $order->products as $product ){
          $product->decrement('quantity',$product->order_item->quantity);
 
@@ -39,6 +40,8 @@ class DeductProductQuantity
        // ->update([
           //'quantity' => DB::raw("quantity - {$item->quantity}")
         //]);
-      };
+      } } catch (Throwable $e) {
+            
+      }
     }
 }

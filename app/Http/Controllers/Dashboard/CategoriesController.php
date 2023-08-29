@@ -145,11 +145,19 @@ class CategoriesController extends Controller
             return redirect()->route('categories.index')
                 ->with('info', 'Record not found');
         }
-        
-        $user = Auth::user();
-        $isAdmin = empty($user->store_id);
-        
         $parents = Category::where('id', '<>', $id)
+        ->where(function($query) use ($id) {
+            $query->whereNull('parent_id')
+                  ->orWhere('parent_id', '<>', $id);
+        })
+        ->get();
+
+    return view('dashboard.categories.edit', compact('category', 'parents'));
+        
+       // $user = Auth::user();
+       // $isAdmin = empty($user->store_id);
+        
+      /*  $parents = Category::where('id', '<>', $id)
             ->where(function ($query) use ($id, $user, $isAdmin) {
                 $query->where(function ($subQuery) use ($id, $user, $isAdmin) {
                     $subQuery->where('parent_id', '<>', $id);
@@ -177,7 +185,7 @@ class CategoriesController extends Controller
             
         $parents = $parents->get();
             
-        return view('dashboard.categories.edit', compact('category', 'parents'));
+        return view('dashboard.categories.edit', compact('category', 'parents'));*/
     }
     
 
