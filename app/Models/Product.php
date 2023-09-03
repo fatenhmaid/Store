@@ -8,6 +8,7 @@ use App\Models\Scopes\StoreScope;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Str;
 
+
 class Product extends Model
 {
     use HasFactory;

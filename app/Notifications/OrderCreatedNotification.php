@@ -7,6 +7,8 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
+use Illuminate\Notifications\Messages\BroadcastMessage;
+
 class OrderCreatedNotification extends Notification
 {
     use Queueable;
@@ -31,7 +33,7 @@ class OrderCreatedNotification extends Notification
      */
     public function via($notifiable)
     {
-        return['mail','database'];
+        return['mail','database','broadcast'];
         $channels=['database'];
         if($notifiable->notification_preferences['order_created']['sms'] ?? false){
             $channels[]='vonage';
@@ -78,6 +80,17 @@ class OrderCreatedNotification extends Notification
 
         ];
 
+    }
+    public function toBroadCast($notifiable){
+        $address = $this->order->billingAddress;
+        return new BroadCastMessage( [
+            'body'=>"A new order (#{$this->order->number}) created by {$address->name} from {$address->country_name}.",
+            'icon'=> 'fas fa-file',
+            'url'=>url('/dashboard'),
+            'order_id'=>$this->order->id,
+   
+   
+        ]);
     }
 
 
