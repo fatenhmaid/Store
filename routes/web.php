@@ -7,6 +7,9 @@ use App\Http\Controllers\Front\ProductsController;
 use App\Http\Controllers\Front\CartController;
 use App\Http\Controllers\Front\CheckOutController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Front\Auth\TwoFactorAuthentcationController;
+use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -21,7 +24,10 @@ use Illuminate\Support\Facades\Route;
 /*Auth::routes([
    'verfiy'=>true,
 ]);*/
-Route::get('/',[HomeController::class,'index'])
+Route::group([
+  'prefix' => LaravelLocalization::setLocale(),
+], function(){
+  Route::get('/',[HomeController::class,'index'])
 ->name('home');
 Route::get('/products/{product:slug}', [ProductsController::class, 'show'])
 ->name('prod.show');
@@ -31,9 +37,14 @@ Route::resource('cart',CartController::class);
 Route::get('checkout',[CheckOutController::class,'create'])
 ->name('checkout');
 Route::post('checkout',[CheckOutController::class,'store']);
+Route::get('auth/user/2fa', [TwoFactorAuthentcationController::class, 'index'])
+        ->name('front.2fa');
 Route::post('/paypal/webhock',function(){
   echo 'Webhock called';
 });
+});
+
+
 
 
 

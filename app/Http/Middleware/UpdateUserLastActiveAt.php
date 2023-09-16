@@ -19,7 +19,7 @@ class UpdateUserLastActiveAt
     public function handle(Request $request, Closure $next)
     {
         $user=$request->user();
-        if($user){      
+        if($user instanceof User){      
             $user->forceFill([
             'last_active_at'=>Carbon::now(),
             ])

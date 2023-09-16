@@ -6,10 +6,11 @@ use App\Http\Controllers\DashboardController;
 use Illuminate\Support\Facades\Route;
 
 Route::group([
-  //'middleware'=>['auth','auth.type:super_admin,admin'],
+  'middleware'=>['auth:admin'],
  // 'as'=>'dashboard.'  التسمية
-  'prefix'=>'dashboard',
+  'prefix'=>'admin/dashboard',
   //'namespace'=>'App\Http\Controllers'
+  //'middleware'=>['auth','auth.type:super_admin,admin']
 ],function(){
     Route::get('profile',[ProfileController::class,'edit'])->name('profile.edit');
     Route::patch('profile',[ProfileController::class,'update'])->name('profile.update');

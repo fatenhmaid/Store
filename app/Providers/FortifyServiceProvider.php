@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Actions\Fortify\AuthenticateUser;
 use App\Actions\Fortify\CreateNewUser;
 use App\Actions\Fortify\ResetUserPassword;
 use App\Actions\Fortify\UpdateUserPassword;
@@ -13,6 +14,8 @@ use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
 use Laravel\Fortify\Fortify;
 use Illuminate\Support\Facades\Config;
+use Laravel\Fortify\Contracts\LoginResponse;
+use Laravel\Fortify\Contracts\LogoutResponse;
 
 class FortifyServiceProvider extends ServiceProvider
 {
@@ -27,7 +30,24 @@ class FortifyServiceProvider extends ServiceProvider
             Config::set('fortify.guard', 'admin');
             Config::set('fortify.passwords', 'admins');
             Config::set('fortify.prefix', 'admin');
+          //  Config::set('fortify.home', 'admin/dashboard');
         }
+
+      
+        $this->app->instance(LoginResponse::class, new class implements LoginResponse {
+            public function toResponse($request) {
+                if ($request->user('admin')) {
+                    return redirect()->intended('admin/dashboard');
+                }
+
+                return redirect()->intended('/');
+            }
+        });
+        $this->app->instance(LogoutResponse::class, new class implements LogoutResponse {
+            public function toResponse($request) {
+                return redirect('/');
+            }
+        });
     }
 
     /**
@@ -39,7 +59,6 @@ class FortifyServiceProvider extends ServiceProvider
         Fortify::updateUserProfileInformationUsing(UpdateUserProfileInformation::class);
         Fortify::updateUserPasswordsUsing(UpdateUserPassword::class);
         Fortify::resetUserPasswordsUsing(ResetUserPassword::class);
-
         RateLimiter::for('login', function (Request $request) {
             $email = (string) $request->email;
 
@@ -49,6 +68,17 @@ class FortifyServiceProvider extends ServiceProvider
         RateLimiter::for('two-factor', function (Request $request) {
             return Limit::perMinute(5)->by($request->session()->get('login.id'));
         });
-        Fortify::viewPrefix('auth.');
+        if(Config::get('fortify.guard') == 'admin'){
+            Fortify::authenticateUsing([new AuthenticateUser, 'authenticate']);
+            Fortify::viewPrefix('auth.');
+        }else{
+            Fortify::viewPrefix('front.auth.');
+        }
+        /*Fortify::loginView(function(){
+         if(Config::get('fortify.guard')=='web'){
+            return view('front.auth.login');
+         }
+         return view('auth.login');
+     });*/
     }
 }
