@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\AccessTokenController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\ProductsController;
+use Illuminate\Support\Facades\Auth;
 
 /*
 |--------------------------------------------------------------------------
@@ -24,3 +25,7 @@ Route::apiResource('products', ProductsController::class);
 
 Route::post('auth/access-tokens',[AccessTokenController::class,'store'])
 ->middleware('guest:sanctum');
+
+Route::delete('auth/access-tokens/{token?}', [AccessTokenController::class, 'destroy'])->middleware('auth:sanctum');
+
+

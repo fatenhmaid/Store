@@ -11,6 +11,7 @@ use App\Repositories\Cart\CartRepository;
 use Illuminate\Support\Facades\Auth;
 use Symfony\Component\Intl\Countries;
 use Illuminate\Support\Facades\DB;
+use App\Exceptions\InvalidOrderException;
 use Throwable;
 
 
@@ -21,7 +22,7 @@ class CheckOutController extends Controller
 
     public function create(CartRepository $cart){
       if($cart->get()->count()== 0){
-        return redirect()->route('home');
+        throw new InvalidOrderException('Cart is empty');    
       }
        return view('front.checkout',[
           'cart'=>$cart,

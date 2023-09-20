@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Response;
 use Laravel\Sanctum\PersonalAccessToken;
 
+
 class AccessTokenController extends Controller
 {
     //
@@ -17,12 +18,13 @@ class AccessTokenController extends Controller
         $request->validate([
             'email'=>'required|email|max:255',
             'password'=>'required|string|min:6',
-            'device_name'=>'string|min:6'
+            'device_name'=>'string|min:6',
+            'abilities'=>'nullable|array'
         ]);
       $user =  User::where('email',$request->email)->first();
       if($user && Hash::check($request->password,$user->password)){
          $device_name = $request->post('device_name',$request->userAgent());
-           $token = $user->createToken($device_name);
+           $token = $user->createToken($device_name,$request->post('abilities'));
 
            return Response::json([
             'code' => 1,
@@ -36,5 +38,23 @@ class AccessTokenController extends Controller
 
          ],401);
 
+    }
+
+    public function destroy($token = null){
+        $user=Auth::guard('sanctum')->user();
+          // Revoke all tokens
+        // $user->tokens()->delete();
+      
+        if (null === $token) {
+            $user->currentAccessToken()->delete();
+            return;
+        }
+        $personalAccessToken = PersonalAccessToken::findToken($token);
+        if($user->id == $personalAccessToken->tokenable_id && 
+        get_class($user)== $personalAccessToken->tokenable_type)
+        {
+        $personalAccessToken->delete();
+        }
+       
     }
 }

@@ -52,7 +52,10 @@ class ProductsController extends Controller
             'price' => 'required|numeric|min:0',
             'compare_price' => 'nullable|numeric|gt:price',
         ]);
-
+          $user=$request->user();
+         if(!$user->tokenCan('products.create')){
+            abort(403,'Not allowed');
+         };
         $product = Product::create($request->all());
 
         return Response::json($product, 201, [
@@ -92,6 +95,10 @@ class ProductsController extends Controller
             'price' => 'sometimes|required|numeric|min:0',
             'compare_price' => 'nullable|numeric|gt:price',
         ]);
+        $user=$request->user();
+        if(!$user->tokenCan('products.update')){
+           abort(403,'Not allowed');
+        };
         $product->update($request->all());
 
 
@@ -107,6 +114,12 @@ class ProductsController extends Controller
     public function destroy($id)
     {
         //
+        $user= Auth::guard('sanctum')->user();
+        if(!$user->tokenCan('products.delete')){
+          return response([
+             'message'=>'Not Allowed'
+          ],403);
+        };
         Product::destroy($id);
         return [
             'message' => 'Product deleted successfully',
