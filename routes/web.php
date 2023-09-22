@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Dashboard\ImportProductsController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\Front\HomeController;
@@ -9,6 +10,7 @@ use App\Http\Controllers\Front\CheckOutController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Front\Auth\TwoFactorAuthentcationController;
 use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
+use App\Http\Controllers\Front\PaymentsController;
 
 
 /*
@@ -24,9 +26,9 @@ use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
 /*Auth::routes([
    'verfiy'=>true,
 ]);*/
-Route::group([
+/*Route::group([
   'prefix' => LaravelLocalization::setLocale(),
-], function(){
+], function(){*/
   Route::get('/',[HomeController::class,'index'])
 ->name('home');
 Route::get('/products/{product:slug}', [ProductsController::class, 'show'])
@@ -38,11 +40,19 @@ Route::get('checkout',[CheckOutController::class,'create'])
 ->name('checkout');
 Route::post('checkout',[CheckOutController::class,'store']);
 Route::get('auth/user/2fa', [TwoFactorAuthentcationController::class, 'index'])
-        ->name('front.2fa');
+->name('front.2fa');
+Route::get('orders/{order}/pay',[PaymentsController::class,'create'])
+->name('orders.payments.create');
+
+Route::post('orders/{order}/stripe/payment-intent/create',[PaymentsController::class,'createStripePaymentIntent'])
+->name('stripe.paymentIntent.create');
+
+Route::get('orders/{order}/pay/stripe/callback',[PaymentsController::class,'confirm'])->name('stripe.return');
+
 Route::post('/paypal/webhock',function(){
   echo 'Webhock called';
 });
-});
+/*});*/
 
 
 

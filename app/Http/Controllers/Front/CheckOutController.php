@@ -71,6 +71,6 @@ class CheckOutController extends Controller
       DB::rollBack();
        throw $e;
     }
-  return redirect()->route('home');
+    return redirect()->route('orders.payments.create',$order->id);
 }
 }

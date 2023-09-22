@@ -72,7 +72,7 @@ class Handler extends ExceptionHandler
                 ->withInput()->withErrors([
                     'message' => $e->getMessage(),
                 ])
-                ->with('info', $e->$message);
+                ->with('info', $message);
         });
     }
 }
