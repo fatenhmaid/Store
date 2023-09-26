@@ -7,6 +7,8 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Cookie;
+use App\Services\CurrencyConverter;
+
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -18,6 +20,10 @@ class AppServiceProvider extends ServiceProvider
     public function register()
     {
         //
+        $this->app->bind('currency.converter', function () {
+            return new CurrencyConverter(config('services.currency_converter.api_key'));
+        });
+
     }
 
     /**

@@ -9,6 +9,7 @@ use App\Http\Controllers\Front\CartController;
 use App\Http\Controllers\Front\CheckOutController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Front\Auth\TwoFactorAuthentcationController;
+use App\Http\Controllers\Front\CurrencyConverter;
 use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
 use App\Http\Controllers\Front\PaymentsController;
 
@@ -41,6 +42,8 @@ Route::get('checkout',[CheckOutController::class,'create'])
 Route::post('checkout',[CheckOutController::class,'store']);
 Route::get('auth/user/2fa', [TwoFactorAuthentcationController::class, 'index'])
 ->name('front.2fa');
+Route::post('currency', [CurrencyConverter::class, 'store'])
+->name('currency.store');
 Route::get('orders/{order}/pay',[PaymentsController::class,'create'])
 ->name('orders.payments.create');
 

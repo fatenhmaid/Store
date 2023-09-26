@@ -45,18 +45,21 @@
             <div class="container">
                 <div class="row align-items-center">
                     <div class="col-lg-4 col-md-4 col-12">
-                        <div class="top-left">
+                    <div class="top-left">
                             <ul class="menu-top-link">
                                 <li>
                                     <div class="select-position">
-                                        <select id="select4">
-                                            <option value="0" selected>$ USD</option>
-                                            <option value="1">€ EURO</option>
-                                            <option value="2">$ CAD</option>
-                                            <option value="3">₹ INR</option>
-                                            <option value="4">¥ CNY</option>
-                                            <option value="5">৳ BDT</option>
-                                        </select>
+                                        <form action="{{ route('currency.store') }}" method="post">
+                                            @csrf
+                                            <select name="currency_code" onchange="this.form.submit()">
+                                                <option value="USD" @selected('USD' == session('currency_code'))>$ USD</option>
+                                                <option value="EUR" @selected('EUR' == session('currency_code'))>€ EURO</option>
+                                                <option value="ILS" @selected('ILS' == session('currency_code'))>$ ILS</option>
+                                                <option value="JOD" @selected('JOD' == session('currency_code'))>₹ JOD</option>
+                                                <option value="SAR" @selected('SAR' == session('currency_code'))>¥ SAR</option>
+                                                <option value="QAR" @selected('QAR' == session('currency_code'))>৳ QAR</option>
+                                            </select>
+                                        </form>
                                     </div>
                                 </li>
                                 <li>
